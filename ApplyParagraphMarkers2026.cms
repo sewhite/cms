@@ -1,0 +1,39 @@
+\check Apply Paragraph Markers 2026 [CAN CHANGE TEXT]
+\description Copy paragraph and poetry markers (default: \p \q1 \q2) from a Model text onto the selected books of this project, matched up verse by verse.\n\nThe Model text supplies the markers (e.g. a project that already has \p/\q1/\q2 in place); this project supplies the base text that receives them. If the Output Project is the same as this project, the changes are made "in place".\n\nA marker already present immediately before a verse in this project is left alone, not duplicated. Poetry/paragraph marker lines that continue mid-verse (a marker followed by ordinary text, not by a \v) are not copied, since there is no way to place them at the right word - only markers that directly precede a \v marker in the Model text are transferred.\n\nVerses that exist in the Model text but not in this project are listed in the results with a note that the marker for that verse could not be copied.\n\nSet "Remove existing paragraph markers first" to Y to strip this project's own markers before copying, rather than merging with what's already there - useful when the existing markers are wrong or inconsistent and you want a clean re-copy from the Model text instead.
+
+\subMenu Unsupported
+
+# Run a python script
+\script ApplyParagraphMarkers2026.py
+\programToRun Python
+
+# Prompt user for which books to process
+\books
+
+# The check will read the text itself
+\noText
+\outputProject
+
+\optionName ModelText
+\optionLocalizedName Model text (has the markers)
+\optionDescription Enter the short name of the project that already has the paragraph/poetry markers you want to copy.
+\optionListAllTexts
+
+\optionName MarkersToCopy
+\optionLocalizedName Markers to copy
+\optionDescription Space-separated list of USFM markers to copy from the Model text. Type ONE backslash before each marker, e.g. \p \q1 \q2 - not two. Leave blank to use the default.
+\optionDefault \p \q1 \q2
+
+\optionName ClearExistingMarkers
+\optionLocalizedName Remove existing paragraph markers first
+\optionDescription Enter Y to strip every marker listed above (wherever it occurs, not just before a verse) out of this project before copying fresh ones from the Model text. Enter N to leave existing markers alone and only add ones that are missing.
+\optionDefault N
+
+# Output of this check is to go to the list window
+\toList
+
+# This file is encoded using utf-8
+\utf8
+
+#\helpFile SampleScript.rtf
+
