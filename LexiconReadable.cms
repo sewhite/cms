@@ -1,0 +1,11 @@
+\check Create Readable Lexicon
+\description Reads the active project's lexicon.xml (Word Analyses lexicon) and creates a plain, easy-to-read HTML page listing every word/stem, prefix, and suffix together with its gloss(es), in three separate sections (Words &amp; Stems, Prefixes, Suffixes) with a search box to filter entries. A permanent copy named lexicon_readable.html is saved in the project folder, and it also opens automatically in your web browser.
+
+\subMenu Lexicon (experimental)
+
+\noText
+\toHtml
+\utf8
+
+\script LexiconReadable.py
+\programToRun Python
