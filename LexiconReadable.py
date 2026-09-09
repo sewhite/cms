@@ -3,8 +3,10 @@
 # Reads the active project's lexicon.xml (the Word Analyses "Lexicon" file --
 # the list of words/stems/prefixes/suffixes and the glosses assigned to each
 # one) and builds a single, plain HTML page listing every entry together
-# with its gloss(es), grouped into three sections: Words & Stems, Prefixes,
-# and Suffixes.
+# with its gloss(es), grouped into four sections: Words, Stems, Prefixes,
+# and Suffixes. A stem is the root part of a word that a prefix or suffix
+# attaches to (lexicon.xml's "Stem" lexeme type), kept separate from whole,
+# free-standing words ("Word" and "Phrase" lexeme types).
 #
 # A permanent copy is saved as lexicon_readable.html next to the project's
 # other files. The same content is also written to cms\checktext.htm --
@@ -132,8 +134,11 @@ HTML_TEMPLATE = u"""<!doctype html>
   h2.subtitle { text-align: center; font-weight: normal; color: #555; margin-top: 0; font-size: 1.1em; }
   h2.section { border-bottom: 2px solid #888; padding-bottom: 0.2em; margin-top: 2.5em; }
   .count { color: #777; font-size: 0.85em; font-weight: normal; }
+  .sectionNote { color: #666; font-size: 0.9em; margin-top: -0.3em; }
   #toc { margin: 2em 0; padding: 1em 1.5em; background: #f2f0ea; border-radius: 6px; }
   #toc a { text-decoration: none; color: #2a5d8a; }
+  #howtofix { margin: 1em 0; padding: 0.8em 1.2em; background: #fff8e6; border: 1px solid #e8d9a0; border-radius: 6px; font-size: 0.9em; color: #444; }
+  #howtofix strong { color: #7a5b00; }
   ul.entries { list-style: none; padding-left: 0; }
   ul.entries li { padding: 0.15em 0; border-bottom: 1px solid #eee; }
   .form { font-weight: bold; font-size: 1.05em; }
@@ -149,18 +154,35 @@ HTML_TEMPLATE = u"""<!doctype html>
 <h1>##PROJECT## Lexicon</h1>
 <h2 class="subtitle">Language code: ##LANGUAGE##</h2>
 
+<div id="howtofix">
+  <strong>This report is read-only.</strong> Found a bad or unwanted gloss? Fix it in
+  Paratext itself: open <strong>Tools &gt; Wordlist&hellip;</strong>, find the word, and
+  edit or remove its gloss there -- that saves the change safely back to
+  <code>lexicon.xml</code>. If a form below has a small superscript number (like
+  <span class="form">word<span class="homograph">2</span></span>), that's its homograph
+  number -- use it to pick the matching entry when a form has more than one.
+  Once you've made changes in Paratext, re-run this report to see them reflected here.
+</div>
+
 <input id="search" type="text" placeholder="Filter entries (form or gloss)...">
 
 <div id="toc">
   <strong>Contents</strong><br>
-  <a href="#words">Words &amp; Stems (##WORD_COUNT##)</a> &middot;
+  <a href="#words">Words (##WORD_COUNT##)</a> &middot;
+  <a href="#stems">Stems (##STEM_COUNT##)</a> &middot;
   <a href="#prefixes">Prefixes (##PREFIX_COUNT##)</a> &middot;
   <a href="#suffixes">Suffixes (##SUFFIX_COUNT##)</a>
 </div>
 
-<h2 class="section" id="words">Words &amp; Stems <span class="count">(##WORD_COUNT## entries)</span></h2>
+<h2 class="section" id="words">Words <span class="count">(##WORD_COUNT## entries)</span></h2>
 <ul class="entries" id="words-list">
 ##WORD_ENTRIES##
+</ul>
+
+<h2 class="section" id="stems">Stems <span class="count">(##STEM_COUNT## entries)</span></h2>
+<p class="sectionNote">A stem is the root part of a word that a prefix or suffix attaches to, rather than a whole word on its own.</p>
+<ul class="entries" id="stems-list">
+##STEM_ENTRIES##
 </ul>
 
 <h2 class="section" id="prefixes">Prefixes <span class="count">(##PREFIX_COUNT## entries)</span></h2>
@@ -206,8 +228,9 @@ def build_html():
     for key in groups:
         groups[key].sort(key=sort_key)
 
-    word_entries = groups["Word"] + groups["Stem"] + groups["Phrase"]
+    word_entries = groups["Word"] + groups["Phrase"]
     word_entries.sort(key=sort_key)
+    stem_entries = groups["Stem"]
     prefix_entries = groups["Prefix"]
     suffix_entries = groups["Suffix"]
 
@@ -215,9 +238,11 @@ def build_html():
     doc = doc.replace(u"##PROJECT##", html_escape(Project))
     doc = doc.replace(u"##LANGUAGE##", html_escape(language_code))
     doc = doc.replace(u"##WORD_COUNT##", unicode(len(word_entries)))
+    doc = doc.replace(u"##STEM_COUNT##", unicode(len(stem_entries)))
     doc = doc.replace(u"##PREFIX_COUNT##", unicode(len(prefix_entries)))
     doc = doc.replace(u"##SUFFIX_COUNT##", unicode(len(suffix_entries)))
     doc = doc.replace(u"##WORD_ENTRIES##", render_entries(word_entries))
+    doc = doc.replace(u"##STEM_ENTRIES##", render_entries(stem_entries))
     doc = doc.replace(u"##PREFIX_ENTRIES##", render_entries(prefix_entries))
     doc = doc.replace(u"##SUFFIX_ENTRIES##", render_entries(suffix_entries))
     return doc
